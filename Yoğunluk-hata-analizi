@@ -1,0 +1,77 @@
+
+import math
+
+print("YOĞUNLUK VE HATA HESAPLAMA PROGRAMI")
+print("1 - Dikdörtgenler prizması")
+print("2 - Silindir")
+
+secim = int(input("Cisim türünü seçiniz (1/2): "))
+
+m = float(input("Kütle (g): "))
+dm = float(input("Kütlenin mutlak hatası (g): "))
+
+if secim == 1:
+    a = float(input("A kenarı (cm): "))
+    da = float(input("A kenarının mutlak hatası (cm): "))
+
+    b = float(input("B kenarı (cm): "))
+    db = float(input("B kenarının mutlak hatası (cm): "))
+
+    c = float(input("C kenarı (cm): "))
+    dc = float(input("C kenarının mutlak hatası (cm): "))
+
+    V = a * b * c
+    rho = m / V
+
+    # Kısmi türevler
+    drho_dm = 1 / (a * b * c)
+    drho_da = -m / (a**2 * b * c)
+    drho_db = -m / (a * b**2 * c)
+    drho_dc = -m / (a * b * c**2)
+
+    # Türev yoluyla mutlak hata
+    delta_rho = math.sqrt(
+        (drho_dm * dm)**2 +
+        (drho_da * da)**2 +
+        (drho_db * db)**2 +
+        (drho_dc * dc)**2
+    )
+
+elif secim == 2:
+    r = float(input("Yarıçap (cm): "))
+    dr = float(input("Yarıçapın mutlak hatası (cm): "))
+
+    h = float(input("Yükseklik (cm): "))
+    dh = float(input("Yüksekliğin mutlak hatası (cm): "))
+
+    V = math.pi * r**2 * h
+    rho = m / V
+
+    # Kısmi türevler
+    drho_dm = 1 / (math.pi * r**2 * h)
+    drho_dr = -2 * m / (math.pi * r**3 * h)
+    drho_dh = -m / (math.pi * r**2 * h**2)
+
+    # Türev yoluyla mutlak hata
+    delta_rho = math.sqrt(
+        (drho_dm * dm)**2 +
+        (drho_dr * dr)**2 +
+        (drho_dh * dh)**2
+    )
+
+else:
+    print("Hatalı seçim yaptınız!")
+    raise SystemExit
+
+if m <= 0 or delta_rho < 0:
+    print("Kütle pozitif olmalıdır.")
+    raise SystemExit
+
+bagil_hata = (delta_rho / abs(rho)) * 100
+
+print("\n--- SONUÇLAR ---")
+print(f"Hacim = {V:.6f} cm^3")
+print(f"Yoğunluk = {rho:.6f} g/cm^3")
+print(f"Mutlak hata = {delta_rho:.6f} g/cm^3")
+print(f"Bağıl hata = {bagil_hata:.4f} %")
+print(f"Sonuç = ({rho:.6f} ± {delta_rho:.6f}) g/cm^3")
